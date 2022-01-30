@@ -1,0 +1,257 @@
+﻿@{
+    ViewData["Title"] = "Внести сотрудника";
+}
+
+<div id="user" class="container" style="max-width:100%">
+
+    <div class="col">
+        <form method="post" class="container" role="form">
+
+            <div class="form-group">
+
+                <div class="col-md-4">
+                    <input id="CitySet" type="text" placeholder="город отправителя" name="CitySet" class="form-control text-center" required/>
+                </div>
+            </div>
+
+            <div class="form-group">
+
+                <div class="col-md-4">
+                    <input id="AddressSet" type="text" placeholder="адрес отправителя" name="AddressSet" class="form-control text-center" required/>
+                </div>
+            </div>
+
+            <div class="form-group">
+
+                <div class="col-md-4">
+                    <input id="CityGet" type="text" placeholder="город получателя" name="CityGet" class="form-control text-center" required/>
+                </div>
+            </div>
+
+            <div class="form-group">
+
+                <div class="col-md-4">
+                    <input id="AddressGet" type="text" placeholder="адрес получателя" name="AddressGet" class="form-control text-center" required/>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+
+                <div class="col-md-4">
+                    <input id="Weight" type="text" placeholder="вес груза(кг)" name="Weight" class="form-control text-center" required/>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+
+                <div class="col-md-4">
+                    <input id="Date" type="date" placeholder="дата забора груза" name="Date" class="form-control text-center" required/>
+                </div>
+            </div>
+
+            <div class="pl-0 pr-3 pb-3 pt-2">
+
+                <button id="ButtonAddUser" style="margin-right: 5px; height: 38px;" class="btn-sm btn-primary">+добавить</button>
+
+            </div>
+
+        </form>
+    </div>
+
+    <div class="col">
+        <form method="post" class="container" role="form">
+            <div class="table-responsive">
+                
+
+
+                <table id="table" class="table table-hover table-bordered table-sm text-center ">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th class="align-middle">
+                                
+                            </th>
+                            <th class="align-middle">
+                                Id
+                            </th>
+                            <th class="align-middle">
+                                Город отправителя
+                            </th>
+                            <th class="align-middle">
+                                Адрес отправителя
+                            </th>
+                            <th class="align-middle">
+                                Город получателя
+                            </th>
+                            <th class="align-middle">
+                                Адрес получателя
+                            </th>
+                            <th class="align-middle">
+                                Вес груза
+                            </th>
+                            <th class="align-middle">
+                                Дата забора груза
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="TBody">
+                        <tr class="UserListItem" id="UserListItem">
+                            <td class="align-middle text-left">
+                                <button class="RemoveUser" value="$NameId">X</button>
+                            </td>
+                            <td class="align-middle text-left">
+                                <span class="CitySet">$Id</span>
+                            </td>
+                            <td class="align-middle text-left">
+                                <span class="AddressSet">$CitySet</span>
+                            </td>
+                            <td class="align-middle text-left">
+                                <span class="AddressSet">$AddressSet</span>
+                            </td>
+                            <td class="align-middle text-left">
+                                <span class="AddressSet">$CityGet</span>
+                            </td>
+                            <td class="align-middle text-left">
+                                <span class="AddressSet">$AddressGet</span>
+                            </td>
+                            <td class="align-middle text-left">
+                                <span class="AddressSet">$Weight</span>
+                            </td>
+                            <td class="align-middle text-left">
+                                <span class="AddressSet">$Date</span>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script>
+        function did(id) { return document.getElementById(id); }
+
+        var userListItem;
+
+        userListItem = did('UserListItem').outerHTML;
+
+        did('UserListItem').outerHTML = '';
+
+        $(document).ready(async function () {
+
+            GetUser();
+
+            function GetUser() {
+
+                did('TBody').innerHTML = '';
+
+                $.ajax({
+                    url: "/Home/GetUser",
+                    type: "POST",
+                    success: function (json) {
+
+                        $.each(json, function () {
+
+                            addRow(this.citySet, this.addressSet, this.cityGet, this.addressGet, this.weight, this.date, this.id, this.id);
+
+                        });
+
+                    }
+                });
+
+            }
+
+            function addRow(CitySetRow, AddressSetRow, CityGetRow, AddressGetRow, WeightRow, DateRow, NameIdRow, IdRow) {
+
+                $('#table > tbody:last-child').append(userListItem
+                    .replace('$NameId', NameIdRow)
+                    .replace('$Id', IdRow)
+                    .replace('$CitySet', CitySetRow)
+                    .replace('$AddressSet', AddressSetRow)
+                    .replace('$CityGet', CityGetRow)
+                    .replace('$AddressGet', AddressGetRow)
+                    .replace('$Weight', WeightRow)
+                    .replace('$Date', DateRow)
+                    
+                );
+
+            }
+
+
+            // добавить пользователя
+            $('#ButtonAddUser').click(function () {
+
+                var citySet = $('#CitySet').val()
+                var addressSet = $('#AddressSet').val()
+                var cityGet = $('#CityGet').val()
+                var addressGet = $('#AddressGet').val()
+                var weight = $('#Weight').val()
+                var date = $('#Date').val()
+               
+
+                $.ajax({
+                    url: "/Home/AddUser",
+                    data: { 'citySet': citySet, 'addressSet': addressSet, 'cityGet': cityGet, 'addressGet': addressGet, 'weight': weight, 'date': date},
+                    type: "POST",
+                    success: function (json) {
+
+                        $.each(json, function () {
+
+                            var nameId = this.id;
+                            var Id = this.id;
+                            var citySet = this.citySet;
+                            var addressSet = this.addressSet;
+                            var cityGet = this.cityGet;
+                            var addressGet = this.addressGet;
+                            var weight = this.weight;
+                            var date = this.date;
+                            
+
+                            addRow(citySet, addressSet, cityGet, addressGet, weight, date, nameId, Id);
+
+                            
+                    });
+
+                    }
+                });
+                GetUser();
+
+            });
+
+
+            // удалить пользователя
+            $(document).on("click", "table#table button.RemoveUser", async function () {
+
+                var nameid = $(this).val();
+
+
+                $.ajax({
+                    url: "/Home/RemoveUser",
+                    data: { 'nameid': nameid },
+                    type: "POST",
+                    success: function () {
+
+                        $('table#table tbody tr').each(function () {
+
+                            if ($(this).find('button.RemoveUser').val() == nameid) {
+
+                                $(this).remove();
+
+                            }
+
+                        });
+
+                    }
+                });
+
+            });
+
+
+        });
+    </script>
